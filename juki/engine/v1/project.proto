@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package protos.juki.engine.v1;
+option go_package = "juki-engine/protos/juki/engine/v1";
+
+import "protos/juki/engine/v1/common.proto";
+import "protos/juki/engine/v1/page.proto";
+import "protos/juki/engine/v1/component.proto";
+import "protos/juki/engine/v1/layout.proto";
+import "protos/juki/engine/v1/route.proto";
+
+service ProjectService {
+  rpc CreateProject (CreateProjectRequest) returns (Project);
+  rpc GetProject (GetProjectRequest) returns (Project);
+  rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
+  rpc UpdateProject (UpdateProjectRequest) returns (Project);
+  rpc DeleteProject (DeleteProjectRequest) returns (Empty);
+}
+
+message Project {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  ProjectSettings settings = 4;
+  repeated Page pages = 5;
+  repeated Layout layouts = 6;
+  repeated UserComponent user_components = 7;
+  RouteNode root_route = 8;
+  Metadata meta = 9;
+}
+
+message ProjectSettings {
+  bool use_typescript = 1;
+  string framework = 2; // "NextJS", "Vite", etc.
+}
+
+message CreateProjectRequest {
+  string name = 1;
+  string description = 2;
+  ProjectSettings settings = 3;
+}
+
+message GetProjectRequest {
+  string id = 1;
+}
+
+message ListProjectsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListProjectsResponse {
+  repeated Project projects = 1;
+  int32 total_count = 2;
+}
+
+message UpdateProjectRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  ProjectSettings settings = 4;
+}
+
+message DeleteProjectRequest {
+  string id = 1;
+}

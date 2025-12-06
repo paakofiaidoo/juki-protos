@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package protos.juki.engine.v1;
+option go_package = "juki-engine/protos/juki/engine/v1";
+
+message Empty {}
+
+
+message Metadata {
+  string id = 1;
+  string created_at = 2;
+  string updated_at = 3;
+}
+
+enum PageType {
+  PAGE_TYPE_UNSPECIFIED = 0;
+  STATIC = 1;
+  DYNAMIC = 2;
+  CATCH_ALL = 3;
+}
+
+enum AccessType {
+  ACCESS_TYPE_UNSPECIFIED = 0;
+  PUBLIC = 1;
+  PROTECTED = 2;
+}

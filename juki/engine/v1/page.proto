@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package protos.juki.engine.v1;
+option go_package = "juki-engine/protos/juki/engine/v1";
+
+import "protos/juki/engine/v1/common.proto";
+
+service PageService {
+  rpc CreatePage (CreatePageRequest) returns (Page);
+  rpc GetPages (GetPagesRequest) returns (GetPagesResponse);
+  rpc DeletePage (DeletePageRequest) returns (Empty);
+  rpc UpdatePage (UpdatePageRequest) returns (Page);
+}
+
+message CreatePageRequest {
+  string name = 1;
+  PageType type = 2;
+  AccessType access = 3;
+  string project_id = 4;
+}
+
+message GetPagesRequest {}
+
+message GetPagesResponse {
+  repeated Page pages = 1;
+}
+
+message DeletePageRequest {
+  string id = 1;
+}
+
+message UpdatePageRequest {
+  string id = 1;
+  string name = 2;
+  string route = 3;
+  PageType type = 4;
+  AccessType access = 5;
+  string content = 6;
+}
+
+message Page {
+  string id = 1;
+  string name = 2;
+  string route = 3;
+  PageType type = 4;
+  AccessType access = 5;
+  string content = 6; // JSON stringified page content
+  string project_id = 7;
+  string layout_id = 8;
+  Metadata meta = 9;
+}
