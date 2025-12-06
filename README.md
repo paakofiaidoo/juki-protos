@@ -6,7 +6,6 @@ This directory contains the Protocol Buffer definitions for the Juki project.
 
 ```
 protos/
-└── protos/
     └── juki/
         └── engine/
             ├── app.proto

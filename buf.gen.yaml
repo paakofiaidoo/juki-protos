@@ -1,0 +1,17 @@
+version: v1
+plugins:
+  # Go Generation
+  - plugin: go
+    out: ../engine/pkg/gen
+    opt: paths=source_relative
+  - plugin: connect-go
+    out: ../engine/pkg/gen
+    opt: paths=source_relative
+
+  # TypeScript Generation (ES + Connect-Web)
+  - plugin: es
+    out: ../editor/src/gen
+    opt: target=ts
+  - plugin: connect-es
+    out: ../editor/src/gen
+    opt: target=ts

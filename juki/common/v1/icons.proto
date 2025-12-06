@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package protos.juki.common.v1;
-option go_package = "juki-engine/protos/juki/common/v1";
+package juki.common.v1;
+option go_package = "juki-engine/pkg/gen/juki/common/v1";
 
 
 service IconService {

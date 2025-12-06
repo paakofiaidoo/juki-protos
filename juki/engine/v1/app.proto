@@ -1,13 +1,13 @@
 syntax = "proto3";
 
 //package editor.app;
-package protos.juki.engine.v1;
-option go_package = "juki-engine/protos/juki/engine/v1";
+package juki.engine.v1;
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
-import "protos/juki/engine/v1/common.proto";
+import "juki/common/v1/common.proto";
 
 service AppService {
-  rpc GetAppInfo (Empty) returns (AppInfo);
+  rpc GetAppInfo (juki.common.v1.Empty) returns (AppInfo);
   rpc UpdateAppName (UpdateAppNameRequest) returns (AppInfo);
 }
 
@@ -21,5 +21,5 @@ message AppInfo {
   string id = 1;
   string name = 2;
   string slug = 3;
-  Metadata meta = 4;
+  juki.common.v1.Metadata meta = 4;
 }

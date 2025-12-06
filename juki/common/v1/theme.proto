@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package protos.juki.common.v1;
-option go_package = "juki-engine/protos/juki/common/v1";
+package juki.common.v1;
+option go_package = "juki-engine/pkg/gen/juki/common/v1";
 
-import "protos/juki/common/v1/common.proto";
+import "juki/common/v1/common.proto";
 
 
 service ThemeService {
