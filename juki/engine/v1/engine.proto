@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+import "juki/common/v1/common.proto";
+import "juki/engine/v1/project.proto";
+import "juki/engine/v1/page.proto";
+
+service EngineService {
+  // Utility
+  rpc Ping (PingRequest) returns (PingResponse);
+
+  // Projects
+  rpc CreateProject (CreateProjectRequest) returns (CreateProjectResponse);
+  rpc GetProject (GetProjectRequest) returns (GetProjectResponse);
+  rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
+  rpc UpdateProject (UpdateProjectRequest) returns (UpdateProjectResponse);
+  rpc DeleteProject (DeleteProjectRequest) returns (DeleteProjectResponse);
+  rpc SyncProject (SyncProjectRequest) returns (SyncProjectResponse);
+  rpc BuildProject (BuildProjectRequest) returns (BuildProjectResponse);
+
+  // Pages
+  rpc CreatePage (CreatePageRequest) returns (CreatePageResponse);
+  rpc GetPage (GetPageRequest) returns (GetPageResponse);
+  rpc SavePage (SavePageRequest) returns (SavePageResponse);
+  // Note: GetPages is in page.proto but not listed here?
+  // engine.go didn't implement GetPages explicitly differently.
+  // Using generic GetProject -> Pages.
+
+  // Plugins
+  rpc InstallPlugin (InstallPluginRequest) returns (InstallPluginResponse);
+  rpc ConfigureCMS (ConfigureCMSRequest) returns (ConfigureCMSResponse);
+
+  // Swarm
+  rpc RunSwarm (RunSwarmRequest) returns (stream SwarmEvent);
+
+  // Watcher
+  rpc SubscribeToFileEvents (SubscribeToFileEventsRequest) returns (stream FileEvent);
+}
+
+// Ping
+message PingRequest {
+    string message = 1;
+}
+
+message PingResponse {
+    string message = 1;
+}
+
+// Plugins
+message InstallPluginRequest {
+    string project_id = 1;
+    string plugin_name = 2;
+    string version = 3;
+}
+
+message InstallPluginResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ConfigureCMSRequest {
+    string project_id = 1;
+    string cms_type = 2;
+    string config_json = 3;
+}
+
+message ConfigureCMSResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Swarm
+message RunSwarmRequest {
+    string project_id = 1;
+    string prompt = 2;
+}
+
+message SwarmStep {
+    string id = 1;
+    string description = 2;
+    string status = 3;
+}
+
+message SwarmPlan {
+    repeated SwarmStep steps = 1;
+}
+
+message SwarmLog {
+    string step_id = 1;
+    string message = 2;
+    string level = 3;
+}
+
+message SwarmResult {
+    bool success = 1;
+    string message = 2;
+}
+
+message SwarmEvent {
+    oneof event {
+        SwarmPlan plan = 1;
+        SwarmLog log = 2;
+        SwarmResult result = 3;
+    }
+}
+
+// Watcher
+message SubscribeToFileEventsRequest {
+    string project_id = 1;
+}
+
+message FileEvent {
+    string path = 1;
+    string type = 2; // CREATE, WRITE, REMOVE, RENAME
+}

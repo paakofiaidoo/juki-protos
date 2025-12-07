@@ -9,13 +9,6 @@ import "juki/engine/v1/component.proto";
 import "juki/engine/v1/layout.proto";
 import "juki/engine/v1/route.proto";
 
-service ProjectService {
-  rpc CreateProject (CreateProjectRequest) returns (Project);
-  rpc GetProject (GetProjectRequest) returns (Project);
-  rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
-  rpc UpdateProject (UpdateProjectRequest) returns (Project);
-  rpc DeleteProject (DeleteProjectRequest) returns (juki.common.v1.Empty);
-}
 
 message Project {
   string id = 1;
@@ -27,6 +20,10 @@ message Project {
   repeated UserComponent user_components = 7;
   RouteNode root_route = 8;
   juki.common.v1.Metadata meta = 9;
+  int32 port = 10;
+  string api_key = 11;
+  string path = 12;
+  string global_css = 13;
 }
 
 message ProjectSettings {
@@ -37,11 +34,20 @@ message ProjectSettings {
 message CreateProjectRequest {
   string name = 1;
   string description = 2;
-  ProjectSettings settings = 3;
+  string path = 3;
+  string framework = 4;
+}
+
+message CreateProjectResponse {
+  Project project = 1;
 }
 
 message GetProjectRequest {
   string id = 1;
+}
+
+message GetProjectResponse {
+  Project project = 1;
 }
 
 message ListProjectsRequest {
@@ -55,12 +61,35 @@ message ListProjectsResponse {
 }
 
 message UpdateProjectRequest {
-  string id = 1;
-  string name = 2;
-  string description = 3;
-  ProjectSettings settings = 4;
+  Project project = 1;
+}
+
+message UpdateProjectResponse {
+  Project project = 1;
 }
 
 message DeleteProjectRequest {
   string id = 1;
 }
+
+message DeleteProjectResponse {
+  bool success = 1;
+}
+
+message SyncProjectRequest {
+    string id = 1;
+}
+
+message SyncProjectResponse {
+    Project project = 1;
+}
+
+message BuildProjectRequest {
+    string project_id = 1;
+}
+
+message BuildProjectResponse {
+    bool success = 1;
+    string output = 2;
+}
+

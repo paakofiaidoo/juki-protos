@@ -5,18 +5,24 @@ option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 import "juki/common/v1/common.proto";
 
-service PageService {
-  rpc CreatePage (CreatePageRequest) returns (Page);
-  rpc GetPages (GetPagesRequest) returns (GetPagesResponse);
-  rpc DeletePage (DeletePageRequest) returns (juki.common.v1.Empty);
-  rpc UpdatePage (UpdatePageRequest) returns (Page);
-}
 
 message CreatePageRequest {
   string name = 1;
   juki.common.v1.PageType type = 2;
   juki.common.v1.AccessType access = 3;
   string project_id = 4;
+}
+
+message CreatePageResponse {
+  Page page = 1;
+}
+
+message GetPageRequest {
+    string id = 1;
+}
+
+message GetPageResponse {
+    Page page = 1;
 }
 
 message GetPagesRequest {}
@@ -38,6 +44,21 @@ message UpdatePageRequest {
   string content = 6;
 }
 
+message UpdatePageResponse {
+    Page page = 1;
+}
+
+message SavePageRequest {
+    string project_id = 1;
+    string page_id = 2;
+    string content = 3;
+}
+
+message SavePageResponse {
+    bool success = 1;
+    string message = 2;
+}
+
 message Page {
   string id = 1;
   string name = 2;
@@ -48,4 +69,5 @@ message Page {
   string project_id = 7;
   string layout_id = 8;
   juki.common.v1.Metadata meta = 9;
+  string raw_content = 10;
 }
