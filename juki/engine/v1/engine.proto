@@ -19,6 +19,8 @@ service EngineService {
   rpc DeleteProject (DeleteProjectRequest) returns (DeleteProjectResponse);
   rpc SyncProject (SyncProjectRequest) returns (SyncProjectResponse);
   rpc BuildProject (BuildProjectRequest) returns (BuildProjectResponse);
+  rpc RunProject (RunProjectRequest) returns (RunProjectResponse);
+  rpc RunProject (RunProjectRequest) returns (RunProjectResponse);
 
   // Pages
   rpc CreatePage (CreatePageRequest) returns (CreatePageResponse);
