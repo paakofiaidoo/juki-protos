@@ -1,10 +1,10 @@
 syntax = "proto3";
 
 package juki.common.v1;
+
 option go_package = "juki-engine/pkg/gen/juki/common/v1";
 
 message Empty {}
-
 
 message Metadata {
   string id = 1;
@@ -14,13 +14,13 @@ message Metadata {
 
 enum PageType {
   PAGE_TYPE_UNSPECIFIED = 0;
-  STATIC = 1;
-  DYNAMIC = 2;
-  CATCH_ALL = 3;
+  PAGE_TYPE_STATIC = 1;
+  PAGE_TYPE_DYNAMIC = 2;
+  PAGE_TYPE_CATCH_ALL = 3;
 }
 
 enum AccessType {
   ACCESS_TYPE_UNSPECIFIED = 0;
-  PUBLIC = 1;
-  PROTECTED = 2;
+  ACCESS_TYPE_PUBLIC = 1;
+  ACCESS_TYPE_PROTECTED = 2;
 }

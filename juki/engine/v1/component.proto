@@ -1,15 +1,16 @@
 syntax = "proto3";
 
 package juki.engine.v1;
-option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 import "juki/common/v1/common.proto";
 
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
 service ComponentService {
-  rpc CreateComponent (CreateComponentRequest) returns (UserComponent);
-  rpc UpdateComponent (UpdateComponentRequest) returns (UserComponent);
-  rpc DeleteComponent (DeleteComponentRequest) returns (juki.common.v1.Empty);
-  rpc ListComponents (ListComponentsRequest) returns (ListComponentsResponse);
+  rpc CreateComponent(CreateComponentRequest) returns (CreateComponentResponse);
+  rpc UpdateComponent(UpdateComponentRequest) returns (UpdateComponentResponse);
+  rpc DeleteComponent(DeleteComponentRequest) returns (DeleteComponentResponse);
+  rpc ListComponents(ListComponentsRequest) returns (ListComponentsResponse);
 }
 
 message CreateComponentRequest {
@@ -18,14 +19,26 @@ message CreateComponentRequest {
   string content = 3;
 }
 
+message CreateComponentResponse {
+  UserComponent component = 1;
+}
+
 message UpdateComponentRequest {
   string id = 1;
   string name = 2;
   string content = 3;
 }
 
+message UpdateComponentResponse {
+  UserComponent component = 1;
+}
+
 message DeleteComponentRequest {
   string id = 1;
+}
+
+message DeleteComponentResponse {
+  bool success = 1;
 }
 
 message ListComponentsRequest {

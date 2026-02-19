@@ -1,11 +1,11 @@
 syntax = "proto3";
 
 package juki.common.v1;
+
 option go_package = "juki-engine/pkg/gen/juki/common/v1";
 
-
 service IconService {
-  rpc SearchIcons (SearchIconsRequest) returns (SearchIconsResponse);
+  rpc SearchIcons(SearchIconsRequest) returns (SearchIconsResponse);
 }
 
 message SearchIconsRequest {

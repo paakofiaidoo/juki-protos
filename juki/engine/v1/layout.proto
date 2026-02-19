@@ -1,9 +1,10 @@
 syntax = "proto3";
 
 package juki.engine.v1;
-option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 import "juki/common/v1/common.proto";
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 message Layout {
   string id = 1;

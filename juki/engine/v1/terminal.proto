@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+service TerminalService {
+  rpc StartTerminal(StartTerminalRequest) returns (stream StartTerminalResponse);
+  rpc SendCommand(SendCommandRequest) returns (SendCommandResponse);
+  rpc ResizeTerminal(ResizeTerminalRequest) returns (ResizeTerminalResponse);
+  rpc KillTerminal(KillTerminalRequest) returns (KillTerminalResponse);
+}
+
+enum CommandType {
+  COMMAND_TYPE_UNSPECIFIED = 0;
+  COMMAND_TYPE_DEV = 1;         // npm run dev / pnpm dev
+  COMMAND_TYPE_BUILD = 2;       // npm run build
+  COMMAND_TYPE_INSTALL = 3;     // npm install
+  COMMAND_TYPE_GIT_PUSH = 4;    // git push
+  COMMAND_TYPE_CUSTOM = 5;      // Special case for specific allowed plugins
+}
+
+message StartTerminalRequest {
+  string project_id = 1;
+  CommandType type = 2;
+  string custom_args = 3; // Only used if type requires it (e.g. install pkg_name)
+}
+
+message StartTerminalResponse {
+  bytes data = 1;
+}
+
+message SendCommandRequest {
+  string project_id = 1;
+  string input = 2; // Input characters for interactive session
+}
+
+message SendCommandResponse {
+  bool success = 1;
+}
+
+message ResizeTerminalRequest {
+  string project_id = 1;
+  int32 rows = 2;
+  int32 cols = 3;
+}
+
+message ResizeTerminalResponse {
+  bool success = 1;
+}
+
+message KillTerminalRequest {
+  string project_id = 1;
+}
+
+message KillTerminalResponse {
+  bool success = 1;
+}

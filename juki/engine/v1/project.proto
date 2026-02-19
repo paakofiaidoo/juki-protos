@@ -1,14 +1,14 @@
 syntax = "proto3";
 
 package juki.engine.v1;
-option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 import "juki/common/v1/common.proto";
-import "juki/engine/v1/page.proto";
 import "juki/engine/v1/component.proto";
 import "juki/engine/v1/layout.proto";
+import "juki/engine/v1/page.proto";
 import "juki/engine/v1/route.proto";
 
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
 
 message Project {
   string id = 1;
@@ -77,19 +77,28 @@ message DeleteProjectResponse {
 }
 
 message SyncProjectRequest {
-    string id = 1;
+  string id = 1;
 }
 
 message SyncProjectResponse {
-    Project project = 1;
+  Project project = 1;
 }
 
 message BuildProjectRequest {
-    string project_id = 1;
+  string project_id = 1;
 }
 
 message BuildProjectResponse {
-    bool success = 1;
-    string output = 2;
+  bool success = 1;
+  string output = 2;
 }
 
+message RunProjectRequest {
+  string project_id = 1;
+}
+
+message RunProjectResponse {
+  bool success = 1;
+  string message = 2;
+  string url = 3;
+}

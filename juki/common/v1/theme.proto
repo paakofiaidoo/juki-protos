@@ -1,17 +1,17 @@
 syntax = "proto3";
 
 package juki.common.v1;
+
+
+
 option go_package = "juki-engine/pkg/gen/juki/common/v1";
 
-import "juki/common/v1/common.proto";
-
-
 service ThemeService {
-  rpc ListThemes (Empty) returns (ListThemesResponse);
-  rpc SetTheme (SetThemeRequest) returns (Theme);
+  rpc ListThemes(ListThemesRequest) returns (ListThemesResponse);
+  rpc SetTheme(SetThemeRequest) returns (SetThemeResponse);
 }
 
-
+message ListThemesRequest {}
 
 message SetThemeRequest {
   string id = 1;
@@ -19,6 +19,11 @@ message SetThemeRequest {
 
 message ListThemesResponse {
   repeated Theme themes = 1;
+}
+
+
+message SetThemeResponse {
+  Theme theme = 1;
 }
 
 message Theme {
