@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+service ConsoleService {
+  // Push a single log entry from the browser to the engine DB
+  rpc PushLog(PushLogRequest) returns (PushLogResponse);
+  // Stream live logs for a project (server-side stream)
+  rpc StreamLogs(StreamLogsRequest) returns (stream StreamLogsResponse);
+  // Get historical logs for a project (paginated)
+  rpc GetLogs(GetLogsRequest) returns (GetLogsResponse);
+  // Clear all logs for a project/session
+  rpc ClearLogs(ClearLogsRequest) returns (ClearLogsResponse);
+}
+
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_LEVEL_LOG = 1;
+  LOG_LEVEL_INFO = 2;
+  LOG_LEVEL_WARN = 3;
+  LOG_LEVEL_ERROR = 4;
+  LOG_LEVEL_DEBUG = 5;
+}
+
+message LogEntry {
+  string id = 1;
+  string project_id = 2;
+  string session_id = 3;
+  LogLevel level = 4;
+  string message = 5;
+  // JSON-encoded array of the original console.log(...args)
+  string args_json = 6;
+  // Unix milliseconds
+  int64 timestamp_ms = 7;
+  // Optional: source file:line from Error.stack
+  string source_location = 8;
+}
+
+message PushLogRequest {
+  LogEntry entry = 1;
+}
+
+message PushLogResponse {
+  string id = 1;
+}
+
+message StreamLogsRequest {
+  string project_id = 1;
+  // If set, only stream logs for this session
+  string session_id = 2;
+}
+
+message StreamLogsResponse {
+  LogEntry entry = 1;
+}
+
+message GetLogsRequest {
+  string project_id = 1;
+  string session_id = 2;
+  // Max entries to return (default 100, max 1000)
+  int32 limit = 3;
+  // Offset for pagination
+  int32 offset = 4;
+  // Filter by level (LOG_LEVEL_UNSPECIFIED = all)
+  LogLevel level_filter = 5;
+}
+
+message GetLogsResponse {
+  repeated LogEntry entries = 1;
+  int32 total = 2;
+}
+
+message ClearLogsRequest {
+  string project_id = 1;
+  // If set, only clear this session's logs
+  string session_id = 2;
+}
+
+message ClearLogsResponse {
+  int32 deleted_count = 1;
+}

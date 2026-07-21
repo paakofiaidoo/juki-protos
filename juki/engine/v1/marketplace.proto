@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+// MarketplaceService — GitHub-as-DB registry for templates, components, plugins
+// and icon packs. The engine fetches a `registry.json` index from a configured
+// GitHub repo, caches it locally (TTL), and serves search/install over gRPC.
+service MarketplaceService {
+  // Force a refresh of the registry cache from GitHub (or return cached if still fresh).
+  rpc RefreshRegistry(RefreshRegistryRequest) returns (RefreshRegistryResponse);
+  // Search/list registry entries, optionally filtered by type and/or query string.
+  rpc ListEntries(ListEntriesRequest) returns (ListEntriesResponse);
+  // Get a single entry's full manifest by id.
+  rpc GetEntry(GetEntryRequest) returns (GetEntryResponse);
+  // Install an entry into the given project (resolves install_type: copy | npm | patch).
+  rpc InstallEntry(InstallEntryRequest) returns (InstallEntryResponse);
+  // List entries already installed for a project.
+  rpc ListInstalled(ListInstalledRequest) returns (ListInstalledResponse);
+}
+
+enum EntryType {
+  ENTRY_TYPE_UNSPECIFIED = 0;
+  ENTRY_TYPE_TEMPLATE = 1;
+  ENTRY_TYPE_COMPONENT = 2;
+  ENTRY_TYPE_PLUGIN = 3;
+  ENTRY_TYPE_ICON_PACK = 4;
+}
+
+enum InstallType {
+  INSTALL_TYPE_UNSPECIFIED = 0;
+  INSTALL_TYPE_COPY = 1;   // download source file(s) -> drop into project, register component
+  INSTALL_TYPE_NPM = 2;    // pnpm add <package> via bridge
+  INSTALL_TYPE_PATCH = 3;  // download AST patch spec -> apply via ts-morph
+}
+
+message MarketplaceEntry {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string version = 4;
+  EntryType type = 5;
+  InstallType install_type = 6;
+  string source = 7;       // URL to source file(s) for "copy" / patch spec for "patch"
+  string package = 8;      // npm package name for "npm"
+  string preview_url = 9;
+  repeated string tags = 10;
+}
+
+message RefreshRegistryRequest {
+  // If true, bypass the TTL cache and force a re-fetch from GitHub.
+  bool force = 1;
+}
+
+message RefreshRegistryResponse {
+  int32 entry_count = 1;
+  int64 fetched_at_ms = 2;
+  bool from_cache = 3;
+}
+
+message ListEntriesRequest {
+  // Optional filter by type; ENTRY_TYPE_UNSPECIFIED means "all".
+  EntryType type = 1;
+  // Optional case-insensitive substring match against name/description/tags.
+  string query = 2;
+}
+
+message ListEntriesResponse {
+  repeated MarketplaceEntry entries = 1;
+}
+
+message GetEntryRequest {
+  string id = 1;
+}
+
+message GetEntryResponse {
+  MarketplaceEntry entry = 1;
+  bool found = 2;
+}
+
+message InstallEntryRequest {
+  string project_id = 1;
+  string entry_id = 2;
+}
+
+message InstallEntryResponse {
+  bool success = 1;
+  string message = 2;
+  // Component id / page route / package name registered as a result, if applicable.
+  string installed_ref = 3;
+}
+
+message ListInstalledRequest {
+  string project_id = 1;
+}
+
+message InstalledEntry {
+  string entry_id = 1;
+  string name = 2;
+  EntryType type = 3;
+  string installed_ref = 4;
+  int64 installed_at_ms = 5;
+}
+
+message ListInstalledResponse {
+  repeated InstalledEntry entries = 1;
+}

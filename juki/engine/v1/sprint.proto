@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+// SprintPlanningService — AI-guided project kickoff ("Sprint Planning Meeting").
+// A PM Agent conversation that deeply understands the project before any
+// code is written, producing a structured ProjectBrief the user approves.
+service SprintPlanningService {
+  // Begin a new planning session for a project (creates a PM conversation)
+  rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+  // Send a message in the planning conversation; streams the PM's response
+  rpc SendPlanningMessage(SendPlanningMessageRequest) returns (stream SendPlanningMessageResponse);
+  // Approve the current draft brief — persists it as the project's brief
+  rpc ApproveBrief(ApproveBriefRequest) returns (ApproveBriefResponse);
+  // Get the currently approved brief for a project (if any)
+  rpc GetBrief(GetBriefRequest) returns (GetBriefResponse);
+}
+
+message ProjectBriefData {
+  string id = 1;
+  string project_id = 2;
+  int32 version = 3;
+  string description = 4;
+  repeated string users = 5;
+  repeated string pages = 6;
+  repeated string plugins = 7;
+  repeated string data_models = 8;
+  string theme_style = 9;
+  string theme_primary_color = 10;
+  int64 created_at_ms = 11;
+}
+
+message StartSessionRequest {
+  string project_id = 1;
+  // Initial one-line description, e.g. "A marketplace for vintage shoes"
+  string description = 2;
+}
+
+message StartSessionResponse {
+  string conversation_id = 1;
+  // The PM Agent's opening question(s)
+  string opening_message = 2;
+}
+
+message SendPlanningMessageRequest {
+  string project_id = 1;
+  string conversation_id = 2;
+  string message = 3;
+}
+
+message SendPlanningMessageResponse {
+  string delta = 1;
+  bool done = 2;
+  // Populated on the final chunk if the PM has produced a draft brief
+  ProjectBriefData draft_brief = 3;
+}
+
+message ApproveBriefRequest {
+  string project_id = 1;
+  string conversation_id = 2;
+  // The (possibly user-edited) brief JSON to persist
+  string brief_json = 3;
+}
+
+message ApproveBriefResponse {
+  ProjectBriefData brief = 1;
+}
+
+message GetBriefRequest {
+  string project_id = 1;
+}
+
+message GetBriefResponse {
+  ProjectBriefData brief = 1;
+  bool found = 2;
+}

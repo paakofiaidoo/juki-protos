@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package juki.engine.v1;
+
+option go_package = "juki-engine/pkg/gen/juki/engine/v1";
+
+// AIService — engine-owned, multi-provider AI communication.
+// The engine enriches every prompt with project context (brief, file tree,
+// recent console logs, conversation history) and routes to the best
+// available provider, auto-rotating on token exhaustion.
+service AIService {
+  // Send a message and get a complete (non-streamed) response
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  // Send a message and stream the response token-by-token
+  rpc StreamMessage(SendMessageRequest) returns (stream StreamMessageResponse);
+  // List all conversations for a project
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
+  // Get message history for a conversation
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse);
+
+  // Provider configuration (user manages API keys per project)
+  rpc ConfigureProvider(ConfigureProviderRequest) returns (ConfigureProviderResponse);
+  rpc ListProviders(ListProvidersRequest) returns (ListProvidersResponse);
+  rpc DeleteProvider(DeleteProviderRequest) returns (DeleteProviderResponse);
+}
+
+enum AgentType {
+  AGENT_TYPE_UNSPECIFIED = 0;
+  AGENT_TYPE_CODE_PILOT = 1;
+  AGENT_TYPE_PM = 2;
+  AGENT_TYPE_ARCHITECT = 3;
+  AGENT_TYPE_DESIGNER = 4;
+  AGENT_TYPE_BUILDER = 5;
+}
+
+message AIProviderConfig {
+  string id = 1;
+  string project_id = 2;
+  string name = 3;        // "claude" | "gemini" | "openai"
+  string api_key = 4;     // write-only; never returned in responses
+  string model = 5;       // e.g. "claude-opus-4-5"
+  int64 token_limit = 6;
+  int64 tokens_used = 7;
+  bool is_active = 8;
+  int32 priority = 9;
+}
+
+message ConfigureProviderRequest {
+  string project_id = 1;
+  string name = 2;
+  string api_key = 3;
+  string model = 4;
+  int64 token_limit = 5;
+  int32 priority = 6;
+}
+
+message ConfigureProviderResponse {
+  AIProviderConfig provider = 1;
+}
+
+message ListProvidersRequest {
+  string project_id = 1;
+}
+
+message ListProvidersResponse {
+  repeated AIProviderConfig providers = 1;
+}
+
+message DeleteProviderRequest {
+  string id = 1;
+}
+
+message DeleteProviderResponse {
+  bool success = 1;
+}
+
+message AIMessageData {
+  string id = 1;
+  string conversation_id = 2;
+  string role = 3; // "user" | "assistant" | "system"
+  string content = 4;
+  int64 tokens_used = 5;
+  string provider_name = 6;
+  int64 timestamp_ms = 7;
+}
+
+message AIConversationData {
+  string id = 1;
+  string project_id = 2;
+  AgentType agent_type = 3;
+  int64 created_at_ms = 4;
+  int32 message_count = 5;
+}
+
+message SendMessageRequest {
+  string project_id = 1;
+  string conversation_id = 2; // empty = create/use default for agent_type
+  AgentType agent_type = 3;
+  string message = 4;
+  // Whether to enrich the prompt with project context (brief, logs, file tree)
+  bool include_context = 5;
+}
+
+message SendMessageResponse {
+  AIMessageData message = 1;
+}
+
+message StreamMessageResponse {
+  // Partial token/chunk
+  string delta = 1;
+  // Set on the final chunk
+  bool done = 2;
+  AIMessageData final_message = 3;
+}
+
+message ListConversationsRequest {
+  string project_id = 1;
+}
+
+message ListConversationsResponse {
+  repeated AIConversationData conversations = 1;
+}
+
+message GetMessagesRequest {
+  string conversation_id = 1;
+  int32 limit = 2;
+}
+
+message GetMessagesResponse {
+  repeated AIMessageData messages = 1;
+}
